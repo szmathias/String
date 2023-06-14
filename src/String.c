@@ -120,10 +120,20 @@ void str_push_back_char(String* str, char value)
     }
     else
     {
-        str->capacity *= 2;
-        char* temp = mem_calloc(str->capacity, sizeof(char));
-        temp = memcpy(temp, str->small_data, str->size);
+        char* data_to_use = str->data;
+        if(str->capacity == STR_MIN_INIT_CAP)
+        {
+            data_to_use = str->small_data;
+        }
+        char* temp = mem_calloc(str->capacity * 2, sizeof(char));
+        temp = memcpy(temp, data_to_use, str->size);
+        
+        if(str->capacity != STR_MIN_INIT_CAP)
+        {
+            free(str->data);
+        }
         str->data = temp;
+        str->capacity *= 2;
         str->data[str->size] = value;
         str->size++;
     }
