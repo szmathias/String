@@ -1,31 +1,31 @@
 #include "String.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-static void* mem_calloc(size_t num_elements, size_t element_size)
+static void *mem_calloc(size_t num_elements, size_t element_size)
 {
-    void* result = calloc(num_elements, element_size);
-    #ifndef NDEBUG
-    if(!result)
+    void *result = calloc(num_elements, element_size);
+#ifndef NDEBUG
+    if (!result)
     {
         fprintf(stderr, "Error: Unable to allocate memory\n");
         exit(EXIT_FAILURE);
     }
-    #endif
+#endif
     return result;
 }
 
 String str_create_empty(size_t initial_capacity)
 {
-    String result = { 0 };
-    if(initial_capacity < STR_MIN_INIT_CAP)
+    String result = {0};
+    if (initial_capacity < STR_MIN_INIT_CAP)
     {
         result.capacity = STR_MIN_INIT_CAP;
         result.size = 0;
-        for(size_t i = 0; i < STR_MIN_INIT_CAP; i++)
+        for (size_t i = 0; i < STR_MIN_INIT_CAP; i++)
         {
             result.small_data[i] = '\0';
         }
@@ -33,7 +33,7 @@ String str_create_empty(size_t initial_capacity)
     else
     {
         size_t cap = STR_MIN_INIT_CAP * 2;
-        while(cap <= initial_capacity)
+        while (cap <= initial_capacity)
         {
             cap *= 2;
         }
@@ -45,10 +45,10 @@ String str_create_empty(size_t initial_capacity)
     return result;
 }
 
-String str_create_from_cstring(const char* cstr)
+String str_create_from_cstring(const char *cstr)
 {
     String result = str_create_empty(strlen(cstr));
-    for(size_t i = 0; i < strlen(cstr); i++)
+    for (size_t i = 0; i < strlen(cstr); i++)
     {
         str_push_back_char(&result, cstr[i]);
     }
@@ -56,10 +56,10 @@ String str_create_from_cstring(const char* cstr)
     return result;
 }
 
-String str_create_from_string(String* str)
+String str_create_from_string(String *str)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
@@ -67,9 +67,9 @@ String str_create_from_string(String* str)
     return str_create_from_cstring(data_to_use);
 }
 
-void str_free(String* str)
+void str_free(String *str)
 {
-    if(str->capacity != STR_MIN_INIT_CAP)
+    if (str->capacity != STR_MIN_INIT_CAP)
     {
         free(str->data);
     }
@@ -78,25 +78,25 @@ void str_free(String* str)
     str->data = NULL;
 }
 
-void str_assign_char(String* str, char value)
+void str_assign_char(String *str, char value)
 {
     str_clear(str);
     str_push_back_char(str, value);
 }
 
-void str_assign_cstring(String* str, const char* cstr)
+void str_assign_cstring(String *str, const char *cstr)
 {
     str_clear(str);
-    for(size_t i = 0; i < strlen(cstr); i++)
+    for (size_t i = 0; i < strlen(cstr); i++)
     {
         str_push_back_char(str, cstr[i]);
     }
 }
 
-void str_assign_string(String* str, String* from)
+void str_assign_string(String *str, String *from)
 {
-    char* data_to_use = from->data;
-    if(from->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = from->data;
+    if (from->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = from->small_data;
     }
@@ -104,11 +104,11 @@ void str_assign_string(String* str, String* from)
     str_assign_cstring(str, data_to_use);
 }
 
-void str_push_back_char(String* str, char value)
+void str_push_back_char(String *str, char value)
 {
-    if(str->size < str->capacity - 1)
+    if (str->size < str->capacity - 1)
     {
-        if(str->capacity == STR_MIN_INIT_CAP)
+        if (str->capacity == STR_MIN_INIT_CAP)
         {
             str->small_data[str->size] = value;
         }
@@ -120,15 +120,15 @@ void str_push_back_char(String* str, char value)
     }
     else
     {
-        char* data_to_use = str->data;
-        if(str->capacity == STR_MIN_INIT_CAP)
+        char *data_to_use = str->data;
+        if (str->capacity == STR_MIN_INIT_CAP)
         {
             data_to_use = str->small_data;
         }
-        char* temp = mem_calloc(str->capacity * 2, sizeof(char));
+        char *temp = mem_calloc(str->capacity * 2, sizeof(char));
         temp = memcpy(temp, data_to_use, str->size);
-        
-        if(str->capacity != STR_MIN_INIT_CAP)
+
+        if (str->capacity != STR_MIN_INIT_CAP)
         {
             free(str->data);
         }
@@ -139,60 +139,60 @@ void str_push_back_char(String* str, char value)
     }
 }
 
-void str_push_back_cstring(String* str, const char* cstr)
+void str_push_back_cstring(String *str, const char *cstr)
 {
-    for(size_t i = 0; i < strlen(cstr); i++)
-    { 
+    for (size_t i = 0; i < strlen(cstr); i++)
+    {
         str_push_back_char(str, cstr[i]);
     }
 }
 
-void str_push_back_string(String* str, String* from)
+void str_push_back_string(String *str, String *from)
 {
-    char* data_to_use = from->data;
-    if(from->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = from->data;
+    if (from->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = from->small_data;
     }
-    
+
     str_push_back_cstring(str, data_to_use);
 }
 
-void str_insert_char(String* str, size_t pos, char value)
+void str_insert_char(String *str, size_t pos, char value)
 {
-    if(pos > str->size)
+    if (pos > str->size)
     {
         return;
     }
 
-    if(pos == str->size)
+    if (pos == str->size)
     {
         str_push_back_char(str, value);
     }
     else
     {
-        char* data_to_use = str->data;
-        if(str->capacity == STR_MIN_INIT_CAP)
+        char *data_to_use = str->data;
+        if (str->capacity == STR_MIN_INIT_CAP)
         {
             data_to_use = str->small_data;
         }
 
-        if(str->size + 1 > str->capacity - 1)
+        if (str->size + 1 > str->capacity - 1)
         {
-            char* temp = mem_calloc(str->capacity * 2, sizeof(char));
-            
+            char *temp = mem_calloc(str->capacity * 2, sizeof(char));
+
             size_t i = 0;
             for (; i < pos; i++)
             {
                 temp[i] = data_to_use[i];
             }
             temp[i] = value;
-            for(; i < str->size; i++)
+            for (; i < str->size; i++)
             {
                 temp[i + 1] = data_to_use[i];
             }
 
-            if(str->capacity != STR_MIN_INIT_CAP)
+            if (str->capacity != STR_MIN_INIT_CAP)
             {
                 free(str->data);
             }
@@ -202,7 +202,7 @@ void str_insert_char(String* str, size_t pos, char value)
         }
         else
         {
-            for(size_t i = str->size; i > pos; i--)
+            for (size_t i = str->size; i > pos; i--)
             {
                 data_to_use[i] = data_to_use[i - 1];
             }
@@ -212,30 +212,30 @@ void str_insert_char(String* str, size_t pos, char value)
     }
 }
 
-void str_insert_cstring(String* str, size_t pos, const char* cstr)
+void str_insert_cstring(String *str, size_t pos, const char *cstr)
 {
-    if(pos > str->size)
+    if (pos > str->size)
     {
         return;
     }
 
-    if(pos == str->size)
+    if (pos == str->size)
     {
         str_push_back_cstring(str, cstr);
     }
     else
     {
-        for(size_t i = 0; i < strlen(cstr); i++)
+        for (size_t i = 0; i < strlen(cstr); i++)
         {
             str_insert_char(str, pos + i, cstr[i]);
         }
     }
 }
 
-void str_insert_string(String* str, size_t pos, String* from)
+void str_insert_string(String *str, size_t pos, String *from)
 {
-    char* data_to_use = from->data;
-    if(from->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = from->data;
+    if (from->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = from->small_data;
     }
@@ -243,12 +243,12 @@ void str_insert_string(String* str, size_t pos, String* from)
     str_insert_cstring(str, pos, data_to_use);
 }
 
-void str_pop_back(String* str)
+void str_pop_back(String *str)
 {
-    if(str->size > 0)
+    if (str->size > 0)
     {
-        char* data_to_use = str->data;
-        if(str->capacity == STR_MIN_INIT_CAP)
+        char *data_to_use = str->data;
+        if (str->capacity == STR_MIN_INIT_CAP)
         {
             data_to_use = str->small_data;
         }
@@ -258,26 +258,26 @@ void str_pop_back(String* str)
     }
 }
 
-void str_erase(String* str, size_t pos)
+void str_erase(String *str, size_t pos)
 {
-    if(str->size == 0 || pos >= str->size)
+    if (str->size == 0 || pos >= str->size)
     {
         return;
     }
 
-    if(pos == str->size - 1)
+    if (pos == str->size - 1)
     {
         str_pop_back(str);
     }
     else
     {
-        char* data_to_use = str->data;
-        if(str->capacity == STR_MIN_INIT_CAP)
+        char *data_to_use = str->data;
+        if (str->capacity == STR_MIN_INIT_CAP)
         {
             data_to_use = str->small_data;
         }
 
-        for(size_t i = pos; i < str->size - 1; i++)
+        for (size_t i = pos; i < str->size - 1; i++)
         {
             data_to_use[i] = data_to_use[i + 1];
         }
@@ -286,15 +286,15 @@ void str_erase(String* str, size_t pos)
     }
 }
 
-bool str_empty(String* str)
+bool str_empty(String *str)
 {
     return (str->size == 0);
 }
 
-void str_clear(String* str)
+void str_clear(String *str)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
@@ -303,10 +303,10 @@ void str_clear(String* str)
     str->size = 0;
 }
 
-char* str_data(String* str)
+char *str_data(String *str)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
@@ -314,37 +314,37 @@ char* str_data(String* str)
     return data_to_use;
 }
 
-size_t str_capacity(String* str)
+size_t str_capacity(String *str)
 {
     return str->capacity;
 }
 
-size_t str_size(String* str)
+size_t str_size(String *str)
 {
     return str->size;
 }
 
-size_t str_find_first_of(String* str, const char* value)
+size_t str_find_first_of(String *str, const char *value)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
 
     size_t pos = STR_NPOS;
     size_t value_len = strlen(value);
-    for(size_t i = 0; i < str->size && value_len > 0; i++)
+    for (size_t i = 0; i < str->size && value_len > 0; i++)
     {
-        for(size_t j = 0; j < value_len; j++)
+        for (size_t j = 0; j < value_len; j++)
         {
-            if(data_to_use[i] == value[j])
+            if (data_to_use[i] == value[j])
             {
                 pos = i;
                 break;
             }
         }
-        if(pos != STR_NPOS)
+        if (pos != STR_NPOS)
         {
             break;
         }
@@ -353,26 +353,26 @@ size_t str_find_first_of(String* str, const char* value)
     return pos;
 }
 
-size_t str_find_cstring(String* str, const char* find)
+size_t str_find_cstring(String *str, const char *find)
 {
     size_t length = strlen(find);
-    if(length == 0)
+    if (length == 0)
     {
         return STR_NPOS;
     }
 
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
 
     size_t pos = STR_NPOS;
-    for(size_t i = 0; i < str->size; i++)
+    for (size_t i = 0; i < str->size; i++)
     {
-        if(data_to_use[i] == find[0])
+        if (data_to_use[i] == find[0])
         {
-            if(strncmp(data_to_use + i, find, length) == 0)
+            if (strncmp(data_to_use + i, find, length) == 0)
             {
                 pos = i;
                 break;
@@ -382,10 +382,10 @@ size_t str_find_cstring(String* str, const char* find)
     return pos;
 }
 
-size_t str_find_string(String* str, String* find)
+size_t str_find_string(String *str, String *find)
 {
-    char* data_to_use = find->data;
-    if(find->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = find->data;
+    if (find->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = find->small_data;
     }
@@ -393,27 +393,27 @@ size_t str_find_string(String* str, String* find)
     return str_find_cstring(str, data_to_use);
 }
 
-void str_remove_extra_ws(String* str)
+void str_remove_extra_ws(String *str)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
 
-    while(!str_empty(str) && isspace((unsigned char)data_to_use[0]) != 0)
+    while (!str_empty(str) && isspace((unsigned char)data_to_use[0]) != 0)
     {
         str_erase(str, 0);
     }
 
-    while(!str_empty(str) && isspace((unsigned char)data_to_use[str->size - 1]) != 0)
+    while (!str_empty(str) && isspace((unsigned char)data_to_use[str->size - 1]) != 0)
     {
         str_pop_back(str);
     }
 
-    for(size_t j = 0; j < str->size; j++)
+    for (size_t j = 0; j < str->size; j++)
     {
-        if(isspace((unsigned char)data_to_use[j]) != 0 && isspace((unsigned char)data_to_use[j + 1]) != 0)
+        if (isspace((unsigned char)data_to_use[j]) != 0 && isspace((unsigned char)data_to_use[j + 1]) != 0)
         {
             str_erase(str, j);
             j--;
@@ -421,55 +421,55 @@ void str_remove_extra_ws(String* str)
     }
 }
 
-void str_to_lower(String* str)
+void str_to_lower(String *str)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
-    
-    for(size_t i = 0; i < str->size; i++)
+
+    for (size_t i = 0; i < str->size; i++)
     {
         data_to_use[i] = tolower(data_to_use[i]);
     }
 }
 
-void str_to_upper(String* str)
+void str_to_upper(String *str)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
 
-    for(size_t i = 0; i < str->size; i++)
+    for (size_t i = 0; i < str->size; i++)
     {
         data_to_use[i] = toupper(data_to_use[i]);
     }
 }
 
-String str_sub_cstring(const char* cstr, size_t pos, size_t count)
+String str_sub_cstring(const char *cstr, size_t pos, size_t count)
 {
     size_t size = strlen(cstr);
 
-    if(count + pos >= size)
+    if (count + pos >= size)
     {
         count = size - pos;
     }
-    
-    if(size - count > size)
+
+    if (size - count > size)
     {
         return str_create_empty(0);
     }
-    
-    if(pos >= size)
+
+    if (pos >= size)
     {
         return str_create_empty(0);
     }
-    
+
     String result = str_create_empty(count);
-    for(size_t i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
     {
         str_push_back_char(&result, cstr[i + pos]);
     }
@@ -477,10 +477,10 @@ String str_sub_cstring(const char* cstr, size_t pos, size_t count)
     return result;
 }
 
-String str_sub_string(String* str, size_t pos, size_t count)
+String str_sub_string(String *str, size_t pos, size_t count)
 {
-    char* data_to_use = str->data;
-    if(str->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = str->data;
+    if (str->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = str->small_data;
     }
@@ -488,34 +488,40 @@ String str_sub_string(String* str, size_t pos, size_t count)
     return str_sub_cstring(data_to_use, pos, count);
 }
 
-int str_compare_cstring(String* lhs, const char* rhs)
+int str_compare_cstring(String *lhs, const char *rhs)
 {
-    char* data_to_use = lhs->data;
-    if(lhs->capacity == STR_MIN_INIT_CAP)
+    char *data_to_use = lhs->data;
+    if (lhs->capacity == STR_MIN_INIT_CAP)
     {
         data_to_use = lhs->small_data;
     }
 
-    size_t size = (lhs->size < strlen(rhs)) ? lhs->size : strlen(rhs);
+    size_t rhs_size = strlen(rhs);
+    size_t min = (lhs->size < strlen(rhs)) ? lhs->size : rhs_size;
 
-    return strncmp(data_to_use, rhs, size);
+    size_t result = strncmp(data_to_use, rhs, min);
+    if (result != 0)
+    {
+        return result;
+    }
+    if (lhs->size < rhs_size)
+    {
+        result = -1;
+    }
+    else if (lhs->size > rhs_size)
+    {
+        result = 1;
+    }
+    return result;
 }
 
-int str_compare_string(String* lhs, String* rhs)
+int str_compare_string(String *lhs, String *rhs)
 {
-    char* lhs_data_to_use = lhs->data;
-    if(lhs->capacity == STR_MIN_INIT_CAP)
-    {
-        lhs_data_to_use = lhs->small_data;
-    }
-
-    char* rhs_data_to_use = rhs->data;
-    if(rhs->capacity == STR_MIN_INIT_CAP)
+    char *rhs_data_to_use = rhs->data;
+    if (rhs->capacity == STR_MIN_INIT_CAP)
     {
         rhs_data_to_use = rhs->small_data;
     }
 
-    size_t size = (lhs->size < rhs->size) ? lhs->size : rhs->size;
-
-    return strncmp(lhs_data_to_use, rhs_data_to_use, size);
+    return str_compare_cstring(lhs, rhs_data_to_use);
 }
